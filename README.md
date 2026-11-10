@@ -204,7 +204,7 @@ Optional: parse run JSON into a flat CSV table for analysis:
 python scripts/parse_runs.py runs/ --output analysis/base_runs.csv
 ```
 
-## Step 2 — Fix One Thing
+## Step 2 — Fix One Thing.
 
 Edit only:
 
