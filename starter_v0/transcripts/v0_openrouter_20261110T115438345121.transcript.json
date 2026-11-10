@@ -1,0 +1,45 @@
+{
+  "transcript_id": "v0_openrouter_20261110T115438345121",
+  "version": "v0",
+  "artifact_version": "v0+p7571296ffec6+t5b22a2476d41",
+  "prompt_hash": "7571296ffec669bc1fc44fb4b40fa5798b65dcc7c27fbfceada9b82d57bc88b0",
+  "tools_hash": "5b22a2476d41b989d5dc1e54f24ce7890e781909deb2f7afafb856ab53a6d7c0",
+  "provider": "openrouter",
+  "model": "openai/gpt-4o-mini",
+  "system_prompt": "C:\\Users\\tail1\\Desktop\\AI\\K5-L3-DAY03-TranVanTai-2A202603506-ResearchAgentToolEval\\starter_v0\\artifacts\\system_prompt.md",
+  "tools": "C:\\Users\\tail1\\Desktop\\AI\\K5-L3-DAY03-TranVanTai-2A202603506-ResearchAgentToolEval\\starter_v0\\artifacts\\tools.yaml",
+  "history_window": 5,
+  "max_tool_rounds": 4,
+  "created_at": "2026-11-10T11:54:38",
+  "updated_at": "2026-11-10T11:54:50",
+  "turns": [
+    {
+      "turn_index": 1,
+      "started_at": "2026-11-10T11:54:38",
+      "user": "hi",
+      "status": "answered",
+      "assistant_text": "Hello! How can I assist you today?",
+      "rounds": [
+        {
+          "round": 1,
+          "assistant_text": "Hello! How can I assist you today?",
+          "tool_calls": [],
+          "tool_results": []
+        }
+      ],
+      "tool_events": [],
+      "ended_at": "2026-11-10T11:54:40"
+    },
+    {
+      "turn_index": 2,
+      "started_at": "2026-11-10T11:54:48",
+      "user": "thoi tiet homm nay la bn",
+      "status": "provider_error",
+      "assistant_text": null,
+      "rounds": [],
+      "tool_events": [],
+      "error": "UnicodeEncodeError: 'charmap' codec can't encode character '\\U0001f527' in position 0: character maps to <undefined>",
+      "ended_at": "2026-11-10T11:54:50"
+    }
+  ]
+}
