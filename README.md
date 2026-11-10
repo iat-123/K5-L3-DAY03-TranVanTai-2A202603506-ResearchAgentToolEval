@@ -314,11 +314,14 @@ Try at least 3 live turns, for example:
 
 Để team cùng zone tự thử agent trong Team showdown, expose UI đang chạy local ra một link public. Cách nhanh nhất, không cần đăng ký domain hay deploy lên cloud, là **Cloudflare Tunnel** (`cloudflared`).
 
-1. Chạy UI local trước (ví dụ Streamlit mặc định cổng `8501`):
+1. Từ thư mục `starter_v0`, cài dependencies nếu chưa cài và chạy UI:
 
    ```bash
-   streamlit run app.py            # → http://localhost:8501
+   python -m pip install -r requirements.txt
+   python -m streamlit run app.py  # → http://localhost:8501
    ```
+
+   UI dùng provider và model được chọn ở sidebar; API key vẫn lấy từ `starter_v0/.env`.
 
 2. Cài `cloudflared`:
 
@@ -338,7 +341,7 @@ Try at least 3 live turns, for example:
 
 4. Copy URL đó, dán vào `REPORT.md` Phần A (mục "Link dùng thử") để team khác mở thử.
 
-Lưu ý: link `trycloudflare.com` là tạm thời, sống theo phiên `cloudflared` (tắt lệnh là mất). Giữ lệnh chạy trong suốt buổi showdown. Nếu team deploy hẳn lên Vercel/Streamlit Cloud thì dùng link đó thay cho tunnel.
+Lưu ý: link `trycloudflare.com` là tạm thời, sống theo phiên `cloudflared` (tắt lệnh là mất). Giữ lệnh chạy trong suốt buổi showdown. UI chưa có đăng nhập; chỉ chia sẻ tunnel với người tin cậy vì người truy cập có thể dùng quota API đã cấu hình. Nếu team deploy hẳn lên Vercel/Streamlit Cloud thì dùng link đó thay cho tunnel.
 
 ## Step 6 — Report + Debate Poster
 
