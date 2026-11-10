@@ -76,9 +76,17 @@ tools:
         headline: {type: string, default: "", description: "Tiêu đề digest nếu người dùng yêu cầu"}
       required: [items, template]
 
+  - name: extract_links
+    description: "Trích các URL HTTP/HTTPS không trùng lặp từ một đoạn text do người dùng cung cấp, giữ nguyên thứ tự xuất hiện. Dùng khi người dùng yêu cầu lấy/liệt kê các liên kết trong văn bản. Không mở URL và không tìm kiếm web; dùng fetch để đọc URL và lookup để tìm kiếm."
+    parameters:
+      type: object
+      properties:
+        text: {type: string, default: "", description: "Đoạn văn bản do người dùng cung cấp để trích URL"}
+      required: [text]
+
   # ---------------- Bonus tools ----------------
   - name: send
-    description: "Đăng text lên Telegram channel (hành động bên ngoài). Chỉ gọi sau khi người dùng đã xác nhận rõ ràng chính xác nội dung cần gửi, sau khi được hỏi xác nhận. Nếu chưa có xác nhận, gọi clarify để hỏi trước và KHÔNG gọi send. Không dùng cho yêu cầu chỉ soạn nháp."
+    description: "Đăng text lên Telegram channel (hành động bên ngoài). Khi người dùng yêu cầu đăng nhưng chưa xác nhận, trước tiên gọi clarify với response_type=yes_no để hỏi có tiến hành không; không hỏi xin nội dung bằng response_type=text ở bước xác nhận đầu và không gọi send. Nếu người dùng xác nhận nhưng nội dung chính xác còn thiếu, hỏi xin nội dung ở lượt sau. Chỉ gọi send sau khi có cả xác nhận rõ ràng và nội dung chính xác; khi gọi phải đặt confirmed=true. Không dùng cho yêu cầu chỉ soạn nháp."
     parameters:
       type: object
       properties:

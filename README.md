@@ -43,38 +43,38 @@ Bonus:
 Đánh dấu khi xong. Mỗi dòng trỏ tới file cần sửa và bằng chứng cần nộp.
 
 **Setup**
-- [ ] `.env` có provider key + `TAVILY_API_KEY`, `FIRECRAWL_API_KEY`, `RAPIDAPI_KEY`
-- [ ] `python scripts/preflight_provider.py --provider openrouter` pass
-- [ ] `pytest` chạy được: contract test + example test xanh, TODO test đang `skipped`
+- [x] `.env` có provider key + `TAVILY_API_KEY`, `FIRECRAWL_API_KEY`, `RAPIDAPI_KEY` (đã kiểm tra có cấu hình; không ghi giá trị vào report)
+- [x] `python scripts/preflight_provider.py --provider openrouter` pass
+- [x] `pytest`: 84 passed, 0 failed, 0 skipped
 
 **Prompt & tool declaration**
-- [ ] Chạy baseline `v0`, ghi vào `artifacts/version_log.csv`
-- [ ] Liệt kê các case FAIL của `v0` và gán mỗi case một loại lỗi (`wrong_tool`, `wrong_arg_value`, `missing_info`...)
-- [ ] `artifacts/system_prompt.md`: bỏ các chỉ dẫn xấu cố ý của starter (đoán thay vì hỏi, gửi không cần xác nhận, ép một bước)
-- [ ] `artifacts/system_prompt.md`: thêm rule routing (khi nào `timeline` / `social_search` / `lookup` / `fetch` / `clarify`)
-- [ ] `artifacts/tools.yaml`: viết lại `description` mỗi tool: làm gì, **khi nào dùng / khi nào không dùng**
-- [ ] `artifacts/tools.yaml`: mô tả rõ convention args (handle không có `@`, `topic=news` cho tin tức, `timeframe`, `search_type=Top|Latest`)
-- [ ] `artifacts/tools.yaml`: `send` mô tả rõ chỉ gửi khi user đã xác nhận (`confirmed=true`)
-- [ ] `v1`, `v2`, `v3`: mỗi version **một** giả thuyết, metric trước/sau trong `version_log.csv`
+- [x] Chạy baseline `v0`, ghi vào `artifacts/version_log.csv` (19 case đo được; 1 provider timeout)
+- [x] Liệt kê các case FAIL của `v0` và gán loại lỗi trong `artifacts/REPORT.md`
+- [x] `artifacts/system_prompt.md`: không đoán thay vì hỏi; yêu cầu xác nhận trước hành động gửi
+- [x] `artifacts/system_prompt.md`: có rule routing cho `timeline` / `social_search` / `lookup` / `fetch` / `clarify`
+- [x] `artifacts/tools.yaml`: description nêu chức năng và khi nào dùng/không dùng
+- [x] `artifacts/tools.yaml`: mô tả convention args (handle không `@`, topic, timeframe, search_type)
+- [x] `artifacts/tools.yaml`: `send` yêu cầu xác nhận (`confirmed=true`)
+- [x] `v1`, `v2`, `v3`: metric và giả thuyết được ghi trong `version_log.csv` (v1 được ghi lại hồi cứu; giả thuyết gốc không được lưu lúc chạy)
 
 **Tool mới**
-- [ ] `tools/<tên>/tool.py` + `TOOL.md` (frontmatter đúng contract trong `tools/README.md`)
-- [ ] Đăng ký trong `tools/__init__.py` (`TOOL_FUNCTIONS`) và `artifacts/tools.yaml`
-- [ ] Unit test cho tool mới trong `tests/test_tools_todo.py` (≥ 3 test)
-- [ ] Ít nhất 1 eval case trong `data/eval_group.json` kiểm tra model có route tới tool mới đúng lúc
+- [x] `tools/extract_links/tool.py` + `TOOL.md` (frontmatter đúng contract)
+- [x] Đăng ký trong `tools/__init__.py` (`TOOL_FUNCTIONS`) và `artifacts/tools.yaml`
+- [x] 3 unit test cho tool mới trong `tests/test_tools_todo.py`
+- [x] Eval G01 trong `data/eval_group.json` kiểm tra route đúng tới tool mới
 
 **Testing**
-- [ ] `data/eval_group.json`: case cho model (routing / args / boundary), xem Step 4
-- [ ] `tests/test_tools_todo.py`: unit test cho code của tool, xem Step 4b
-- [ ] `pytest`: 0 failed, 0 skipped
+- [x] `data/eval_group.json`: 10 case, gồm 5 single-turn và 5 multi-turn
+- [x] `tests/test_tools_todo.py`: hoàn thành các stub unit test
+- [x] `pytest`: 0 failed, 0 skipped
 
 **Demo & report**
-- [ ] UI chạy được + link dùng thử
-- [ ] `chat.py`: ≥ 3 lượt live, có transcript
-- [ ] `artifacts/REPORT.md` Phần A trước 16:30, Phần B trước khi nộp
+- [x] UI chạy local được; `http://localhost:8501` (không tạo link public/deploy)
+- [x] `chat.py`: 3 lượt live, transcript trong `transcripts/`
+- [x] `artifacts/REPORT.md` Phần A và Phần B đã hoàn thiện
 
 **Bonus (tuỳ chọn)**
-- [ ] `send` có xác nhận trước khi gửi, có transcript chứng minh
+- [ ] Gửi Telegram thật kèm transcript (không thực hiện gửi thật; guard được kiểm thử offline và bằng eval)
 - [ ] Small Local Model Challenge (Step 7)
 
 ## Folder Map
@@ -102,6 +102,9 @@ starter_v0/
     eval_research_extension.json
   tools/
     README.md                 # tool folder contract
+    extract_links/            # team-added local URL extraction tool
+      TOOL.md
+      tool.py
     <tool_name>/
       TOOL.md                 # frontmatter + notes
       tool.py                 # self-contained implementation
@@ -123,6 +126,7 @@ Core tools:
 - `lookup`: tìm trên web (có `topic` general/news và `timeframe`).
 - `fetch`: đọc nội dung một URL.
 - `format`: trình bày các item đã có thành markdown digest.
+- `extract_links`: trích các URL HTTP/HTTPS không trùng lặp từ văn bản người dùng cung cấp (tool mới của nhóm).
 
 Bonus tools:
 

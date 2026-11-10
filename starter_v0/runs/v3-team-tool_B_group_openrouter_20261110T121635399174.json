@@ -1,0 +1,698 @@
+{
+  "run_id": "v3-team-tool_B_group_openrouter_20261110T121635399174",
+  "version": "v3-team-tool",
+  "artifact_version": "v3-team-tool+pe117294d84a7+tf0938e2a8b6d",
+  "prompt_hash": "e117294d84a7b3c878cdde7494c9b85d0336e3e244af57ad198bc863fd294567",
+  "tools_hash": "f0938e2a8b6d58a5d438654326015f29e00e8abe31442b8e9605719029ba215a",
+  "phase": "B",
+  "suite": "group",
+  "provider": "openrouter",
+  "model": "openai/gpt-4o-mini",
+  "system_prompt": "C:\\Users\\vuqt1\\Desktop\\ai in action\\day4\\lapsang\\K5-L3-DAY03-TranVanTai-2A202603506-ResearchAgentToolEval\\starter_v0\\artifacts\\system_prompt.md",
+  "tools": "C:\\Users\\vuqt1\\Desktop\\ai in action\\day4\\lapsang\\K5-L3-DAY03-TranVanTai-2A202603506-ResearchAgentToolEval\\starter_v0\\artifacts\\tools.yaml",
+  "eval_cases": "data\\eval_group.json",
+  "dataset_id": "day04_v2_research_group",
+  "dataset_role": "group",
+  "description": "10 team-authored cases: 5 single-turn and 5 multi-turn, covering custom link extraction and routing boundaries.",
+  "generated_at": "2026-11-10T12:16:35",
+  "summary": {
+    "total_cases": 10,
+    "measured_cases": 10,
+    "provider_error_cases": 0,
+    "passed_cases": 9,
+    "case_accuracy": 0.9,
+    "tool_routing_accuracy": 1.0,
+    "argument_accuracy": 0.9,
+    "multiturn_accuracy": 1.0,
+    "failure_counts": {
+      "wrong_boundary": 1
+    },
+    "observed_mismatch_counts": {
+      "wrong_arg_value": 1
+    }
+  },
+  "results": [
+    {
+      "id": "G01_extract_links",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Model route văn bản có URL tới tool extract_links và giữ nguyên đoạn đầu vào."
+      },
+      "input": "Trích các liên kết duy nhất trong đoạn sau: Bài A https://example.com/a, bài B https://example.org/b. Bài A lặp lại https://example.com/a",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "extract_links",
+            "args": {
+              "text": "Bài A https://example.com/a, bài B https://example.org/b. Bài A lặp lại https://example.com/a"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "extract_links",
+            "args": {
+              "text": "Bài A https://example.com/a, bài B https://example.org/b. Bài A lặp lại https://example.com/a"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "extract_links",
+          "args": {
+            "text": "Bài A https://example.com/a, bài B https://example.org/b. Bài A lặp lại https://example.com/a"
+          },
+          "result": {
+            "tool": "extract_links",
+            "links": [
+              "https://example.com/a",
+              "https://example.org/b"
+            ],
+            "count": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "G02_social_top",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Yêu cầu bài nổi bật trên mạng xã hội phải chọn search_type=Top."
+      },
+      "input": "Tìm các bài nổi bật nhất trên X về AI an toàn",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "AI an toàn",
+              "search_type": "Top"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "AI an toàn",
+              "search_type": "Top"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "social_search",
+          "args": {
+            "query": "AI an toàn",
+            "search_type": "Top"
+          },
+          "result": {
+            "tool": "search_tweets",
+            "error": "HTTPError",
+            "message": "403 Client Error: Forbidden for url: https://twitter-api45.p.rapidapi.com/search.php?query=AI+an+to%C3%A0n&search_type=Top"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G03_meta_no_tool",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Câu hỏi về khả năng của agent không cần gọi công cụ."
+      },
+      "input": "Bạn có thể giúp tôi nghiên cứu những loại chủ đề nào?",
+      "expect": {
+        "no_tool": true,
+        "behavior": "answer_without_tool"
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [],
+        "actual_text": "Tôi có thể giúp bạn nghiên cứu nhiều loại chủ đề khác nhau, bao gồm nhưng không giới hạn ở:\n\n1. Khoa học và công nghệ (AI, máy học, công nghệ thông tin)\n2. Y tế và sức khỏe (bệnh tật, phương pháp điều trị, dinh dưỡng)\n3. Kinh tế và tài chính (thị trường, đầu tư, kinh doanh)\n4. Môi trường và biến đổi khí hậu\n5. Văn hóa và xã hội (nghệ thuật, lịch sử, tâm lý học)\n6. Giáo dục và phát triển cá nhân\n7. Chính trị và quan hệ quốc tế\n\nNếu bạn có chủ đề cụ thể nào trong đầu, hãy cho tôi biết để tôi có thể hỗ trợ tốt hơn!",
+        "case_failure_type": "unnecessary_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": []
+    },
+    {
+      "id": "G04_missing_url",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Không tự bịa URL khi người dùng chưa cung cấp liên kết."
+      },
+      "input": "Đọc và tóm tắt bài báo này giúp tôi",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "text"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn vui lòng cung cấp liên kết hoặc thông tin cụ thể về bài báo mà bạn muốn tôi đọc và tóm tắt?",
+              "response_type": "text"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn vui lòng cung cấp liên kết hoặc thông tin cụ thể về bài báo mà bạn muốn tôi đọc và tóm tắt?",
+            "response_type": "text"
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn vui lòng cung cấp liên kết hoặc thông tin cụ thể về bài báo mà bạn muốn tôi đọc và tóm tắt?",
+            "response_type": "text",
+            "options": [],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "G05_send_confirmation",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Hỏi xác nhận yes/no trước hành động gửi bên ngoài; không gọi send."
+      },
+      "input": "Đăng nội dung này lên Telegram giúp tôi",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "yes_no"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": false,
+        "routing_correct": true,
+        "args_correct": false,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn muốn đăng nội dung gì lên Telegram?",
+              "response_type": "text"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_boundary",
+        "observed_mismatch": "wrong_arg_value",
+        "failure_type": "wrong_boundary",
+        "failures": [
+          "response_type: expected 'yes_no', got 'text'"
+        ]
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn muốn đăng nội dung gì lên Telegram?",
+            "response_type": "text"
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn muốn đăng nội dung gì lên Telegram?",
+            "response_type": "text",
+            "options": [],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "G06_multiturn_timeframe",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Giữ timeframe tuần từ lượt trước khi follow-up chỉ đổi chủ đề."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm tin tức AI trong tuần này"
+        },
+        {
+          "role": "user",
+          "content": "Thu hẹp còn robot học"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "robot học",
+              "topic": "news",
+              "timeframe": "week"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "robot học",
+              "topic": "news",
+              "timeframe": "week"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "lookup",
+          "args": {
+            "query": "robot học",
+            "topic": "news",
+            "timeframe": "week"
+          },
+          "result": {
+            "tool": "web_search",
+            "query": "robot học",
+            "topic": "news",
+            "timeframe": "week",
+            "items": [
+              {
+                "title": "Cuộc đua robot đang chuyển từ phần cứng sang trí tuệ nhân tạo",
+                "url": "https://vneconomy.vn/techconnect/cuoc-dua-robot-dang-chuyen-tu-phan-cung-sang-tri-tue-nhan-tao.htm",
+                "source": "vneconomy.vn",
+                "summary": "Tại Mỹ, các công ty khởi nghiệp như Physical Intelligence, Skild AI và Generalist đang phát triển phần mềm giúp robot học nhiều kỹ năng mà không cần huấn luyện lại quá nhiều. Generalist cho biết mô hình GEN-1.5 có thể hoàn thành khoảng 60% nhiệm vụ đơn giản sau khi xem một video trình diễn dài từ 3 đến 12 giy.\n\nỞ Trung Quốc, X Square đã công bố nghiên cứu cho thấy robot có thể học kỹ năng thao tác từ một video do con người thực hiện mà không cần huấn luyện lại mô hình cho từng nhiệm vụ. [...] Tại Mỹ, các công ty khởi nghiệp như Physical Intelligence, Skild AI và Generalist đang phát triển phần mềm giúp robot học nhiều kỹ năng mà không cần huấn luyện lại quá nhiều. \n\nTại Mỹ, các công ty khởi nghiệp như Physical Intelligence, Skild AI và Generalist đang phát triển phần mềm giúp robot học nhiều kỹ năng mà không cần huấn luyện lại quá nhiều. [...] 09:16 04/11/2026\n\nTại Mỹ, các công ty khởi nghiệp như Physical Intelligence, Skild AI và Generalist đang phát triển phần mềm giúp robot học nhiều kỹ năng mà không cần huấn luyện lại quá nhiều.\n\nCuộc đua robot đang chuyển từ phần cứng sang trí tuệ nhn tạo\n\nCác doanh nghiệp Trung Quốc đang chuyển hướng sang phát triển AI để giúp robot hiểu môi trường, học nhiệm vụ mới và thích ứng với những công việc chưa được lập trình sẵn...\n\n13:47 03/11/2026\n\nVệ tinh trong không gian (hình ảnh minh họa)",
+                "score": 0.73846215
+              },
+              {
+                "title": "Bên trong “phòng gym” đặc biệt nơi robot học cách làm việc như con người",
+                "url": "https://baotintuc.vn/ben-trong-phong-gym-dac-biet-noi-robot-hoc-cach-lam-viec-nhu-con-nguoi-post1397921.html",
+                "source": "baotintuc.vn",
+                "summary": "Từ một trung tâm huấn luyện robot ở Đức, cuộc đua AI đang cho thấy một thách thức mới của ngành công nghiệp: làm thế nào để máy móc học được kỹ năng từ thế",
+                "score": 0.68571854
+              },
+              {
+                "title": "Trung Quốc bước vào cuộc đua phát triển trí não robot - Báo VnExpress",
+                "url": "https://vnexpress.net/trung-quoc-buoc-vao-cuoc-dua-phat-trien-tri-nao-robot-5140231.html",
+                "source": "vnexpress.net",
+                "summary": "Các công ty khởi nghiệp Mỹ như Physical Intelligence, Skild AI và Generalist, đang phát triển phần mềm dạy robot các kỹ năng khác nhau mà không cần mất quá nhiều thời gian huấn luyện lại.\n\nGeneralist cho biết mô hình GEN-1.5 của họ hoàn thành khoảng 60% nhiệm vụ đơn giản sau khi xem đoạn trình diễn kéo dài 3-12 giy. Công ty X Square của Trung Quốc công bố nghiên cứu cho thấy robot có thể học kỹ năng xử lý từ video của con người mà không cần đào tạo lại mô hình cho từng nhiệm vụ. [...] \"Những phòng thí nghiệm hàng đầu của Mỹ đang đặt ra tiêu chuẩn khắt khe, đặc biệt là tốc độ robot học hỏi và tái sử dụng kỹ năng\", Georg Stieler, chuyên gia tư vấn robot, cho biết.\n\nRobot hình người của X Square biểu diễn làm việc nhà tại Hội nghị Robot Thế giới 2026 tại Bắc Kinh hôm 19/8. Ảnh: Reuters\n\nRobot hình người của X Square biểu diễn làm việc nhà tại Hội nghị Robot Thế giới 2026 tại Bắc Kinh hôm 19/8. Ảnh: Reuters [...] Sau nhiều năm chế tạo robot hình người có khả năng chạy, nhảy múa và lộn ngược, các công ty Trung Quốc đang dồn lực vào chinh phục thách thức: phát triển trí tuệ nhn tạo (AI) để những cỗ máy này hữu ích hơn trong nhiều công việc đa dạng. Nỗ lực chuyển hướng này đang thúc đẩy làn sóng đầu tư vào AI hiện thn, lĩnh vực tập trung vào phần mềm cho phép robot hiểu môi trường xung quanh, học nhiệm vụ mới và thích nghi mà không cần lập trình cho từng công việc cụ thể.",
+                "score": 0.49362883
+              },
+              {
+                "title": "Tân Hoa Xã ra mắt cặp robot hình người AI mô phỏng sinh học làm MC thời sự đầu tiên thế giới",
+                "url": "https://viettimes.vn/tan-hoa-xa-ra-mat-cap-robot-hinh-nguoi-ai-mo-phong-sinh-hoc-lam-mc-thoi-su-dau-tien-the-gioi-post208098.html",
+                "source": "viettimes.vn",
+                "summary": "UBTECH đóng góp chuỗi công nghệ tích hợp, từ da nhn tạo mô phỏng sinh học, phần cứng trí tuệ hiện thn, hệ điều hành, mô hình AI quy mô lớn có khả năng biểu đạt cảm xúc đến công nghệ sản xuất hàng loạt robot hoàn chỉnh.\n\nSự kết hợp này giúp robot không chỉ có hình dáng gần giống con người mà còn có khả năng xuất hiện trước ống kính, thực hiện các bản tin tại hiện trường và tương tác với người đối diện. [...] Về cấu trúc công nghệ, robot được trang bị kiến trúc gồm ba thành phần liên kết: “bộ não – biểu đạt – điều khiển”. Hệ thống có thể truy xuất theo thời gian thực các thông tin chính trị, thời sự chính thống đã qua quy trình kiểm duyệt và xác thực, qua đó hạn chế nguy cơ phát tán thông tin sai lệch do hiện tượng “ảo giác AI” gy ra. [...] Trong tương lai, UBTECH dự kiến mở rộng ứng dụng robot sang nhiều môi trường khác nhau, như các trung tm giáo dục trải nghiệm và nghiên cứu, không gian tiếp đón khách của thành phố, hoạt động giao lưu văn hóa quốc tế và các chương trình đưa tin về thám hiểm không gian.",
+                "score": 0.39985907
+              },
+              {
+                "title": "Phát triển ngành robot Việt Nam gắn với nhu cầu thực tiễn",
+                "url": "https://www.vietnamplus.vn/phat-trien-nganh-robot-gan-nghien-cuu-robot-voi-nhu-cau-thuc-tien-post1146248.vnp",
+                "source": "vietnamplus.vn",
+                "summary": "Ông Lê Minh Nhật cho biết nếu trước đy robot chủ yếu thực hiện các nhiệm vụ cố định trong nhà máy, thì hiện nay công nghệ AI, học máy và thị giác máy tính đã giúp robot có khả năng thích nghi với nhiều môi trường, xử lý tình huống mới và đưa ra quyết định linh hoạt hơn. [...] Theo ông Lê Minh Nhật, phát triển nguồn nhn lực robot cần sự kết hợp chặt chẽ giữa nghiên cứu khoa học và phát triển sản phẩm. Xy dựng được mối liên kết bền vững giữa cơ sở nghiên cứu và doanh nghiệp sẽ giúp Việt Nam rút ngắn khoảng cách từ phòng thí nghiệm đến thị trường, nng cao năng lực đổi mới sáng tạo và sức cạnh tranh của ngành robot./.\n\nTiến sỹ ngành Khoa học Máy tính tại Đại học George Mason (Mỹ) Lê Minh Nhật. (Ảnh: Vietnam+) [...] Tiến sỹ ngành Khoa học Máy tính tại Đại học George Mason (Mỹ) Lê Minh Nhật. (Ảnh: Vietnam+)\n\n \n\nFacebook; \"Facebook\") Twitter; \"Twitter\") Lưu bài viết; \"Lưu bài viết\") Bản in; \"Print\") Copy link; \"Copy link\")\n\nNgành robot tại Mỹ đang phát triển nhanh nhờ những tiến bộ của trí tuệ nhn tạo (AI), với phạm vi ứng dụng ngày càng mở rộng từ sản xuất công nghiệp sang nhiều lĩnh vực đời sống.",
+                "score": 0.36181894
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G07_multiturn_social_top",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Giữ query chủ đề qua lượt sau và đổi search_type sang Top."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tìm bài đăng trên X về AI tạo sinh"
+        },
+        {
+          "role": "user",
+          "content": "Chỉ lấy bài phổ biến nhất"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "AI tạo sinh",
+              "search_type": "Top"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "AI tạo sinh",
+              "search_type": "Top"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "social_search",
+          "args": {
+            "query": "AI tạo sinh",
+            "search_type": "Top"
+          },
+          "result": {
+            "tool": "search_tweets",
+            "error": "HTTPError",
+            "message": "403 Client Error: Forbidden for url: https://twitter-api45.p.rapidapi.com/search.php?query=AI+t%E1%BA%A1o+sinh&search_type=Top"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G08_multiturn_timeline_switch",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Đổi handle dựa vào correction của người dùng, không giữ nhầm account cũ."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tweet mới nhất của Sam Altman là gì?"
+        },
+        {
+          "role": "user",
+          "content": "Đổi sang Elon Musk"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "elonmusk"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "elonmusk"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "timeline",
+          "args": {
+            "screenname": "elonmusk"
+          },
+          "result": {
+            "tool": "get_user_tweets",
+            "error": "HTTPError",
+            "message": "403 Client Error: Forbidden for url: https://twitter-api45.p.rapidapi.com/timeline.php?screenname=elonmusk"
+          }
+        }
+      ]
+    },
+    {
+      "id": "G09_multiturn_supply_url",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Sau khi được cung cấp URL còn thiếu, dùng fetch với đúng URL."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Tóm tắt bài viết này giúp tôi"
+        },
+        {
+          "role": "assistant",
+          "content": "Bạn gửi URL bài viết cần tóm tắt nhé."
+        },
+        {
+          "role": "user",
+          "content": "https://example.com/research"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "fetch",
+            "args": {
+              "url": "https://example.com/research"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "fetch",
+            "args": {
+              "url": "https://example.com/research"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "fetch",
+          "args": {
+            "url": "https://example.com/research"
+          },
+          "result": {
+            "tool": "read_url",
+            "url": "https://example.com/research",
+            "items": [
+              {
+                "title": "Example Domain",
+                "url": "https://example.com/research",
+                "source": "example.com",
+                "summary": "This domain is for use in documentation examples without needing permission. This is not a service; avoid relying on it for testing and monitoring purposes.\n\nهذا النطاق مُخصص للاستخدام في أمثلة التوثيق دون الحاجة إلى إذن. هذه ليست خدمة، يُرجى تجنب الاعتماد عليها لأغراض الاختبار والمراقبة.\n\n该域名仅用于文档示例，无需获得许可。这并非一项服务，请勿将其用于测试和监控目的。\n\nL’usage de ce domaine est réservé à des exemples de documentation, sans autorisation préalable. Il ne s’agit pas d’un service ; son utilisation à des fins de test ou de surveillance est à éviter.\n\nДанный домен предназначен для использования в примерах документации без необходимости получения предварительного разрешения. Это не сервис; не рекомендуется его использование для тестирования и мониторинга.\n\nEste dominio está destinado al uso en ejemplos de documentación sin necesidad de permiso. Esto no es un servicio; evitar utilizarlo para realizar pruebas o monitoreos.\n\n [Learn more](https://iana.org/help/example-domains)"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "G10_multiturn_switch_source",
+      "phase": "B",
+      "suite": "group",
+      "case_suite": "group",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Khi người dùng đổi nguồn sang web, không gọi lại social_search."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Mọi người nói gì về OpenAI trên Twitter?"
+        },
+        {
+          "role": "user",
+          "content": "Bỏ Twitter, chuyển sang tìm tin tức trên web"
+        },
+        {
+          "role": "user",
+          "content": "Giữ chủ đề OpenAI"
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "OpenAI",
+              "topic": "news",
+              "timeframe": "week"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "OpenAI",
+              "topic": "news",
+              "timeframe": "week"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "lookup",
+          "args": {
+            "query": "OpenAI",
+            "topic": "news",
+            "timeframe": "week"
+          },
+          "result": {
+            "tool": "web_search",
+            "query": "OpenAI",
+            "topic": "news",
+            "timeframe": "week",
+            "items": [
+              {
+                "title": "OpenAI",
+                "url": "https://tavily.com/knowledge/company/p4PyTakV77G9",
+                "source": "tavily.com",
+                "summary": "# OpenAI\nID: p4PyTakV77G9\nWebsite: www.openai.com\nHeadquarters: San Francisco, CA, United States\nLinkedIn: www.linkedin.com/company/openai · 11,529,792 followers\nIndustry: Research Services\nIndustry codes: SIC 87, 873, NAICS 54, 541\nCompany type: Partnership\nSocial profiles: www.facebook.com/openai, www.twitter.com/openai, www.crunchbase.com/organization/openai, www.instagram.com/openai.gpt, www.instagram.com/openai, www.youtube.com/@openai, www.youtube.com/openai, github.com/openai [...] Description: OpenAI is a company that believes in research and development to lead to artificial general intelligence, a system that can solve human-level problems. [...] ## Products and services\nKeywords: research & development, emerging ai software, openai, artificial intelligence machine learning, artificial general intelligence, development, research, human-level problems, technology, application-software, artificial-intelligence, platform",
+                "score": 0.90593183
+              },
+              {
+                "title": "Setting a new standard for responsible AI infrastructure | OpenAI",
+                "url": "https://openai.com/index/setting-new-standard-responsible-ai-infrastructure",
+                "source": "openai.com",
+                "summary": "The promise of AI is that it gives people more power to shape their own futures. It can help someone learn a new skill, build a business, or solve a problem that was previously out of reach. Building more computing infrastructure capacity in the United States can help lower the cost of delivering AI, put these tools in more people’s hands, and ensure America stays at the forefront of the technology. [...] protect residents, and ensure that the benefits of AI infrastructure are broadly shared. [...] Create opportunities for local workers and businesses.We’ll publish the jobs we expect to create, work with unions and training providers to help residents prepare for them, and report annually on hiring and apprenticeships. We’ll also make sustained investments in priorities residents help select.",
+                "score": 0.72231215
+              },
+              {
+                "title": "OpenAI gets $11 billion funding at $1.25 trillion valuation, source says | Reuters",
+                "url": "https://www.reuters.com/business/openai-secures-11-billion-funding-125-trillion-valuation-bloomberg-news-reports-2026-11-06",
+                "source": "reuters.com",
+                "summary": "Nov 6 (Reuters) - OpenAI has closed ‌on new funding of $11 billion, the initial part of a round ​that values the company ​at $1.25 trillion, a source familiar with ⁠the matter said on Friday.\n\nThe $11 ​billion raised so far represents ​only a portion of OpenAI's original target of up to $30 billion, while ​the company's valuation has ​come down from the $1.5 trillion level it ‌had ⁠initially sought, two investors said. [...] The Reuters Daily Briefing newsletter provides all the news you need to start your day. Sign up here.\n\nAdvertisement · Scroll to continue\n\nSoftBank and MGX participated in the funding, the investors said.\n\nBloomberg News reported ​on the ​funding ⁠earlier on Friday.\n\nSentiment toward AI companies has ​cooled in the last ​month, ⁠with some investors valuing rival Anthropic's planned IPO at about $1.5 ⁠trillion, ​below earlier expectations ​of roughly $2 trillion.",
+                "score": 0.7147281
+              },
+              {
+                "title": "OpenAI kicks off charm offensive to change voters' view of data centers | Reuters",
+                "url": "https://www.reuters.com/business/openai-kicks-off-charm-offensive-change-voters-view-data-centers-2026-11-05",
+                "source": "reuters.com",
+                "summary": "SAN FRANCISCO, Nov 5 (Reuters) - Stunning ​victories by Democrats in US midterm elections this week have been interpreted by many as Americans repudiating tech ‌industry plans to build data centers across the country. OpenAI has now embarked on new strategies to change their minds.\n\nThe AI lab on Thursday laid out policies — in the works since August — intended to help the company build more trust with local communities and convince them that data centers will ​benefit them. [...] OpenAI officials, along with many of their peers in tech, ​have spent the last ⁠two years trying to build ties with the administration of US President Donald Trump in hopes of shaping federal policy around AI.\n\nOpenAI CEO Sam Altman donated $1 million to Trump's inaugural committee and later attended Trump's second inauguration. Last year, Brockman donated $25 million in his personal capacity to ⁠a Trump ​super PAC. [...] The Reuters Daily Briefing newsletter provides all the news you need to start your day. Sign up here.\n\nOpenAI said it will no longer use non-disclosure agreements with public officials when negotiating or discussing future sites, although ​proprietary information would still be under wraps. It will also give residents access to construction plans ⁠and their potential effect on traffic, noise and lighting.",
+                "score": 0.66569364
+              },
+              {
+                "title": "OpenAI will keep investing in AI data centers despite election results, CFO tells CNBC",
+                "url": "https://www.cnbc.com/2026/11/06/open-ai-data-centers-election.html",
+                "source": "cnbc.com",
+                "summary": "OpenAI CFO Sarah Friar on Friday said the company will continue to invest in artificial intelligence infrastructure, even after voters strongly rebuked data centers during Tuesday's midterm elections. [...] OpenAI depends on data centers to train its AI models and serve customers, and Friar said she doesn't think the midterms dramatically changed anything for the company.\n\n\"If the midterm means more focus on data centers and communities, we're going to keep doing the work to get into those communities and to build trust with them,\" Friar said. [...] \"When I think about the midterms, I need to keep thinking about how do we keep investing to meet that customer demand,\" Friar told CNBC's Sara Eisen in an interview at the Citi TMT Leadership Summit at California's Pebble Beach. \"It starts early with having built relationships with all of the hyperscalers, and it will continue to mean that we raise capital.\"",
+                "score": 0.65914243
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,7 +1,258 @@
 {
   "dataset_id": "day04_v2_research_group",
   "dataset_role": "group",
-  "description": "Case do NHÓM tự viết thêm để cover thêm trường hợp. Mỗi case cần: id, phase='B', query HOẶC turns, failure_type (thuộc allowed_failure_types), và expect (tool_calls[...] hoặc no_tool=true). Nên kèm metadata.what_it_tests.",
-  "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
-  "cases": []
+  "description": "10 team-authored cases: 5 single-turn and 5 multi-turn, covering custom link extraction and routing boundaries.",
+  "allowed_failure_types": [
+    "wrong_tool",
+    "wrong_arg_value",
+    "wrong_boundary",
+    "unnecessary_tool",
+    "out_of_scope",
+    "missing_info"
+  ],
+  "cases": [
+    {
+      "id": "G01_extract_links",
+      "phase": "B",
+      "query": "Trích các liên kết duy nhất trong đoạn sau: Bài A https://example.com/a, bài B https://example.org/b. Bài A lặp lại https://example.com/a",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "extract_links",
+            "args": {
+              "text": "Bài A https://example.com/a, bài B https://example.org/b. Bài A lặp lại https://example.com/a"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Model route văn bản có URL tới tool extract_links và giữ nguyên đoạn đầu vào."
+      }
+    },
+    {
+      "id": "G02_social_top",
+      "phase": "B",
+      "query": "Tìm các bài nổi bật nhất trên X về AI an toàn",
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "AI an toàn",
+              "search_type": "Top"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Yêu cầu bài nổi bật trên mạng xã hội phải chọn search_type=Top."
+      }
+    },
+    {
+      "id": "G03_meta_no_tool",
+      "phase": "B",
+      "query": "Bạn có thể giúp tôi nghiên cứu những loại chủ đề nào?",
+      "failure_type": "unnecessary_tool",
+      "expect": {
+        "no_tool": true,
+        "behavior": "answer_without_tool"
+      },
+      "metadata": {
+        "what_it_tests": "Câu hỏi về khả năng của agent không cần gọi công cụ."
+      }
+    },
+    {
+      "id": "G04_missing_url",
+      "phase": "B",
+      "query": "Đọc và tóm tắt bài báo này giúp tôi",
+      "failure_type": "missing_info",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "text"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Không tự bịa URL khi người dùng chưa cung cấp liên kết."
+      }
+    },
+    {
+      "id": "G05_send_confirmation",
+      "phase": "B",
+      "query": "Đăng nội dung này lên Telegram giúp tôi",
+      "failure_type": "wrong_boundary",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "yes_no"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Hỏi xác nhận yes/no trước hành động gửi bên ngoài; không gọi send."
+      }
+    },
+    {
+      "id": "G06_multiturn_timeframe",
+      "phase": "B",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tìm tin tức AI trong tuần này"
+        },
+        {
+          "role": "user",
+          "content": "Thu hẹp còn robot học"
+        }
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "robot học",
+              "topic": "news",
+              "timeframe": "week"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Giữ timeframe tuần từ lượt trước khi follow-up chỉ đổi chủ đề."
+      }
+    },
+    {
+      "id": "G07_multiturn_social_top",
+      "phase": "B",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tìm bài đăng trên X về AI tạo sinh"
+        },
+        {
+          "role": "user",
+          "content": "Chỉ lấy bài phổ biến nhất"
+        }
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "AI tạo sinh",
+              "search_type": "Top"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Giữ query chủ đề qua lượt sau và đổi search_type sang Top."
+      }
+    },
+    {
+      "id": "G08_multiturn_timeline_switch",
+      "phase": "B",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tweet mới nhất của Sam Altman là gì?"
+        },
+        {
+          "role": "user",
+          "content": "Đổi sang Elon Musk"
+        }
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "elonmusk"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Đổi handle dựa vào correction của người dùng, không giữ nhầm account cũ."
+      }
+    },
+    {
+      "id": "G09_multiturn_supply_url",
+      "phase": "B",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tóm tắt bài viết này giúp tôi"
+        },
+        {
+          "role": "assistant",
+          "content": "Bạn gửi URL bài viết cần tóm tắt nhé."
+        },
+        {
+          "role": "user",
+          "content": "https://example.com/research"
+        }
+      ],
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "fetch",
+            "args": {
+              "url": "https://example.com/research"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Sau khi được cung cấp URL còn thiếu, dùng fetch với đúng URL."
+      }
+    },
+    {
+      "id": "G10_multiturn_switch_source",
+      "phase": "B",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Mọi người nói gì về OpenAI trên Twitter?"
+        },
+        {
+          "role": "user",
+          "content": "Bỏ Twitter, chuyển sang tìm tin tức trên web"
+        },
+        {
+          "role": "user",
+          "content": "Giữ chủ đề OpenAI"
+        }
+      ],
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "OpenAI",
+              "topic": "news",
+              "timeframe": "week"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Khi người dùng đổi nguồn sang web, không gọi lại social_search."
+      }
+    }
+  ]
 }
