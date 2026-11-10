@@ -3,5 +3,325 @@
   "dataset_role": "group",
   "description": "Case do NHÓM tự viết thêm để cover thêm trường hợp. Mỗi case cần: id, phase='B', query HOẶC turns, failure_type (thuộc allowed_failure_types), và expect (tool_calls[...] hoặc no_tool=true). Nên kèm metadata.what_it_tests.",
   "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
-  "cases": []
+  "cases": [
+    {
+      "id": "G01_deduplicate_research_items",
+      "phase": "B",
+      "suite": "group",
+      "query": "Hãy loại các kết quả trùng lặp sau và giữ lại mỗi kết quả duy nhất: [{\"title\":\"AI Research\",\"url\":\"https://example.com/ai\"},{\"title\":\"Bản sao\",\"url\":\"https://example.com/ai\"}]",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "deduplicate",
+            "args": {}
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Model có gọi deduplicate khi được yêu cầu lọc item trùng lặp đã cung cấp hay không."
+      }
+    },
+    {
+      "id": "G02_social_search_topic",
+      "phase": "B",
+      "suite": "group",
+      "query": "Tìm các bài đăng trên X về GPT-5.",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "GPT-5"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Tìm bài đăng theo chủ đề phải dùng social_search, không dùng timeline."
+      }
+    },
+    {
+      "id": "G03_web_news_today",
+      "phase": "B",
+      "suite": "group",
+      "query": "Tìm tin tức AI hôm nay trên web.",
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "AI",
+              "topic": "news",
+              "timeframe": "day"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Tin tức trong ngày phải route sang lookup với topic=news và timeframe=day."
+      }
+    },
+    {
+      "id": "G04_fetch_given_url",
+      "phase": "B",
+      "suite": "group",
+      "query": "Tóm tắt nội dung trang này: https://example.com/research",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "fetch",
+            "args": {
+              "url": "https://example.com/research"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Khi user đã cung cấp URL cụ thể, agent dùng fetch thay vì tìm kiếm web."
+      }
+    },
+    {
+      "id": "G05_clarify_missing_article_url",
+      "phase": "B",
+      "suite": "group",
+      "query": "Đọc và tóm tắt bài báo này giúp mình.",
+      "failure_type": "missing_info",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "text"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Thiếu URL bài viết thì hỏi lại, không tự đoán link."
+      }
+    },
+    {
+      "id": "G06_multiturn_timeline_account",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tóm tắt 5 bài đăng mới nhất của một tài khoản X."
+        },
+        {
+          "role": "user",
+          "content": "Tài khoản của Elon Musk."
+        },
+        {
+          "role": "user",
+          "content": "Đúng, lấy 5 bài gần nhất."
+        }
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "timeline",
+            "args": {
+              "screenname": "elonmusk",
+              "limit": 5
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Sau khi hội thoại cung cấp tài khoản, route timeline và giữ đúng handle cùng limit."
+      }
+    },
+    {
+      "id": "G07_multiturn_social_search_top",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tìm bài đăng mới về OpenAI trên X."
+        },
+        {
+          "role": "user",
+          "content": "Đổi sang các bài phổ biến nhất, không phải bài mới nhất."
+        }
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "social_search",
+            "args": {
+              "query": "OpenAI",
+              "search_type": "Top"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Cập nhật search_type thành Top theo yêu cầu mới và giữ chủ đề OpenAI từ ngữ cảnh."
+      }
+    },
+    {
+      "id": "G08_multiturn_lookup_timeframe",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tìm tin AI hôm nay trên web."
+        },
+        {
+          "role": "user",
+          "content": "Còn tin robotics thì sao? Vẫn chỉ lấy tin hôm nay."
+        }
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "lookup",
+            "args": {
+              "query": "robotics",
+              "topic": "news",
+              "timeframe": "day"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Đổi chủ đề trong lượt sau nhưng giữ topic=news và timeframe=day theo ngữ cảnh."
+      }
+    },
+    {
+      "id": "G09_multiturn_fetch_url",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tóm tắt bài viết này giúp mình."
+        },
+        {
+          "role": "user",
+          "content": "Đây là link: https://example.com/ai-report"
+        }
+      ],
+      "failure_type": "missing_info",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "fetch",
+            "args": {
+              "url": "https://example.com/ai-report"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Sau khi user bổ sung URL, dùng fetch với đúng URL từ lượt trước."
+      }
+    },
+    {
+      "id": "G10_multiturn_arxiv_papers",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Tìm các bài nghiên cứu về transformer trên arXiv."
+        },
+        {
+          "role": "user",
+          "content": "Ưu tiên những bài mới cập nhật gần đây."
+        }
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "papers",
+            "args": {
+              "query": "transformer",
+              "sort_by": "lastUpdatedDate"
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Giữ truy vấn arXiv qua nhiều lượt và chọn sort_by=lastUpdatedDate khi ưu tiên cập nhật mới."
+      }
+    },
+    {
+      "id": "G11_filter_research_results",
+      "phase": "B",
+      "suite": "group",
+      "query": "Trong các kết quả đã thu thập, chỉ giữ các nguồn example.com có nhắc đến AI và loại kết quả nói về quảng cáo: [{\"title\":\"AI research\",\"url\":\"https://example.com/research\"},{\"title\":\"AI ads\",\"url\":\"https://example.com/ads\"},{\"title\":\"AI research\",\"url\":\"https://elsewhere.org/research\"}]",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "filter_results",
+            "args": {}
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Model có chọn filter_results để thu hẹp tập kết quả hiện có thay vì tìm kiếm lại hay không."
+      }
+    },
+    {
+      "id": "G12_compare_research_sources",
+      "phase": "B",
+      "suite": "group",
+      "query": "So sánh hai kết quả nghiên cứu sau theo tiêu đề, nguồn và ngày xuất bản: [{\"title\":\"Study A\",\"source\":\"Journal A\",\"published_date\":\"2026-01-01\"},{\"title\":\"Study B\",\"source\":\"Journal B\",\"published_date\":\"2026-02-01\"}]",
+      "failure_type": "wrong_tool",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "compare_sources",
+            "args": {}
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Model có chọn compare_sources để tạo bảng so sánh từ ít nhất hai kết quả đã có hay không."
+      }
+    },
+    {
+      "id": "G13_confirmed_export_digest",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {
+          "role": "user",
+          "content": "Lưu nguyên văn digest Markdown `# AI Weekly\\n\\n- Study A: https://example.com/a` vào file ai-weekly-eval.md. Trước tiên hãy hỏi xác nhận nội dung và tên file."
+        },
+        {
+          "role": "user",
+          "content": "Mình xác nhận lưu đúng nội dung và tên file đó."
+        }
+      ],
+      "failure_type": "wrong_boundary",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "export_digest",
+            "args": {
+              "confirmed": true
+            }
+          }
+        ]
+      },
+      "metadata": {
+        "what_it_tests": "Sau khi xác nhận tường minh, model gọi export_digest với confirmed=true thay vì ghi file trước khi được phép."
+      }
+    }
+  ]
 }

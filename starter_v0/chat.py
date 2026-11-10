@@ -5,7 +5,7 @@ import json
 import re
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from env_loader import load_lab_env
 from providers import make_provider
@@ -57,6 +57,16 @@ def execute_tool_call(call: ToolCall) -> dict[str, Any]:
 
 
 def tool_results_message(events: list[dict[str, Any]]) -> dict[str, str]:
+    action_blocked = any(
+        isinstance(event.get("result"), dict)
+        and event["result"].get("error") == "action_blocked"
+        for event in events
+    )
+    action_notice = (
+        "\nA requested external action was blocked by the UI. Do not claim it was completed."
+        if action_blocked
+        else ""
+    )
     return {
         "role": "user",
         "content": (
@@ -64,6 +74,7 @@ def tool_results_message(events: list[dict[str, Any]]) -> dict[str, str]:
             f"{json_text(events, max_chars=24000)}\n\n"
             "Use only these tool results. If the user asked for a digest and the items are ready, "
             "call the formatting tool. Otherwise answer the user directly with cited sources when available."
+            f"{action_notice}"
         ),
     }
 
@@ -84,6 +95,7 @@ def run_model_tool_loop(
     tools: list[dict[str, Any]],
     model: str | None,
     max_tool_rounds: int,
+    tool_executor: Callable[[ToolCall], dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     working_messages = list(messages)
     rounds: list[dict[str, Any]] = []
@@ -112,8 +124,8 @@ def run_model_tool_loop(
         non_clarification_events: list[dict[str, Any]] = []
 
         for call in calls:
-            print(f"🔧 {call.name}({json.dumps(call.args, ensure_ascii=False, sort_keys=True)})")
-            event = execute_tool_call(call)
+            print(f"TOOL {call.name}({json.dumps(call.args, ensure_ascii=False, sort_keys=True)})")
+            event = (tool_executor or execute_tool_call)(call)
             round_record["tool_results"].append(event)
             all_tool_events.append(event)
 
